@@ -64,8 +64,10 @@
         <form action="">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="http://example.com">
-						<span class="input-group-btn">
-							<button class="btn btn-default" type="button" onclick="telecharger()">Go!</button>
+                <span class="input-group-btn">
+							<button id="chargement" class="btn btn-default" type="button"
+                                    onclick="telecharger()">Go
+                                !</button>
 						</span>
             </div>
             <!-- /input-group -->
@@ -78,9 +80,23 @@
 <!-- BODY CONTENT -->
 <div class="container">
 
-    <!-- Ananlysis' results -->
+    <!-- WEBPageTest Analysis' results -->
 
-    <!-- End ananlysis' results -->
+    <!-- End analysis' results -->
+
+    <!-- W3C Validator Analysis' results -->
+
+    <table class="table table-hover">
+        <thead>
+        <th>Type</th>
+        <th>Intitulé</th>
+        </thead>
+        <tbody id="w3c">
+
+        </tbody>
+    </table>
+
+    <!-- End analysis' results -->
 
 </div>
 <!-- END BODY CONTENT -->

@@ -2,7 +2,8 @@
 <html>
 <head>
 
-    <title>Website Audit 2</title>
+    <title>Website Audit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8" lang="fr"/>
 
     <!--//indexof getjsonobject substring substr -->
 
@@ -42,8 +43,8 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="http://www.rapportsiteweb.com">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">À
-                        propos <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false">&Agrave; propos <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="http://www.indexwebmarketing.com">Contact</a></li>
                     </ul>
@@ -61,17 +62,16 @@
 
         <p>W3C validator and WebPageTest speed results</p>
 
-        <form action="">
+        <form action="#">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="http://example.com">
-                <span class="input-group-btn">
-							<button id="chargement" class="btn btn-default" type="button"
-                                    onclick="telecharger()">Go
-                                !</button>
-						</span>
+                <input type="text" class="form-control" placeholder="Enter a URL e.g. https://www.facebook.com/"
+                       autofocus>
+                <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit" onclick="telecharger()">Analyze</button>
+                </div>
             </div>
-            <!-- /input-group -->
         </form>
+
     </div>
 </div>
 <!-- END PAGE HEADER CONTENT -->
@@ -88,17 +88,15 @@
 
     <table class="table table-hover">
         <thead>
-        <th style="max-width: 40px">Caract&eacute;ristique test&eacute;e</th>
+        <th nowrap>Caract&eacute;ristique test&eacute;e</th>
         <th>R&eacute;sultat</th>
         </thead>
         <tbody id="wpt">
 
         </tbody>
-    </table>
 
-    <table class="table table-hover">
         <thead>
-        <th style="max-width: 40px">Type</th>
+        <th>Type</th>
         <th>Message</th>
         </thead>
         <tbody id="w3c">

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="984c1f6f-42c9-4af9-b209-256f54a886b4" name="info-ssh1.iut.u-bordeaux.fr" url="http://info-ssh1.iut.u-bordeaux.fr/perso/2016/rrieunier">
-        <fileTransfer host="info-ssh1.iut.u-bordeaux.fr" port="22" rootFolder="/mnt/roon/users/rrieunier/Www/perso/2016/rrieunier" accessType="SFTP">
+      <webServer id="984c1f6f-42c9-4af9-b209-256f54a886b4" name="info-ssh2.iut.u-bordeaux.fr" url="http://info-timide.iut.u-bordeaux.fr/perso/2016/rrieunier/">
+        <fileTransfer host="info-ssh2.iut.u-bordeaux.fr" port="22" rootFolder="/mnt/roon/users/rrieunier/Www/perso/2016/rrieunier" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

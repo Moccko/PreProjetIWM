@@ -7,7 +7,6 @@
 
     <!--//indexof getjsonobject substring substr -->
 
-
     <!-- INCLUDE BOOTSTRAP -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -60,14 +59,15 @@
     <div class="container">
         <h1>Website audit</h1>
 
-        <p>W3C validator and WebPageTest speed results</p>
+        <p>W3C validator &amp; WebPageTest speed results</p>
 
         <form action="#">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Enter a URL e.g. https://www.facebook.com/"
-                       autofocus>
+                <input type="url" class="form-control"
+                       placeholder="Entrez une URL par exemple 'https://www.facebook.com/' ou plus simplement 'facebook.com'"
+                       autofocus required>
                 <div class="input-group-btn">
-                    <button class="btn btn-default" type="submit" onclick="telecharger()">Analyze</button>
+                    <button class="btn btn-default" type="submit" onclick="telecharger()">Analyser</button>
                 </div>
             </div>
         </form>
@@ -76,36 +76,32 @@
 </div>
 <!-- END PAGE HEADER CONTENT -->
 
-
 <!-- BODY CONTENT -->
 <div class="container">
-
-    <!-- WEBPageTest Analysis' results -->
-
-    <!-- End analysis' results -->
-
-    <!-- W3C Validator Analysis' results -->
-
     <table class="table table-hover">
         <thead>
         <th nowrap>Caract&eacute;ristique test&eacute;e</th>
         <th>R&eacute;sultat</th>
         </thead>
+
+        <!-- WEBPageTest Analysis' results -->
         <tbody id="wpt">
 
         </tbody>
+        <!-- End WPT analysis' results -->
 
         <thead>
         <th>Type</th>
         <th>Message</th>
         </thead>
+
+        <!-- W3C Validator Analysis' results -->
         <tbody id="w3c">
 
         </tbody>
+        <!-- End W3C analysis' results -->
+
     </table>
-
-    <!-- End analysis' results -->
-
 </div>
 <!-- END BODY CONTENT -->
 

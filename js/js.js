@@ -1,6 +1,52 @@
-﻿﻿/**
- * Created by rrieunier on 14/11/2016.
+﻿/**
+ * Created by Roman Rieunier on 14/11/2016.
  */
+
+/**
+ * Méthode permettant d'insérer des balises <code></code> dans un string avec comme séparateurs “ et ”
+ * @param str : string
+ * @returns str : string
+ */
+function insererBalisesCode(str) {
+	str = str.replace(/“/g, "<code>");
+	str = str.replace(/”/g, "</code>");
+	return str;
+}
+
+/**
+ * Méthode permettant de séparer un string en un tableau de 3 string afin de mettre des balises <mark></mark> autour
+ * du 2ème string (le code erroné dans W3C)
+ * @param str : string
+ * @returns extraits : Array[string]
+ */
+function surlignage(str) {
+	var tab = str.split("");	// je crée un tableau de caractères pour manipuler plus facilement str
+	var extraits = [];			// le tableau contenant les string
+	extraits.push(tab.splice(0, 10).join(''));	// le surlignage commence à partir du 10ème caractère
+	var place = tab.length - 6;					// le surlignage s'arrête 6 caractères avant la fin
+	extraits.push(tab.splice(0, place).join(''));
+	extraits.push(tab.join(''));
+	return extraits;
+}
+
+/**
+ * méthode pour formater correctement l'URL passée (ex: facebook.com --> https://www.facebook.com/ )
+ * @param str : string
+ * @returns str : string
+ */
+function formatURL(str) {
+	var www = new RegExp('^www\\.');			// commence par www.
+	var https = new RegExp('^https?:\\/\\/');	// commence par http:// ou https://
+	var slash = new RegExp('\\/\\$');			// finit par /
+	if (!https.test(str)) {						// on ajuste pour que l'URL commence par https://www.
+		if (!www.test(str))
+			str = 'www.' + str;
+		str = "https://" + str;
+	}
+	if (!slash.test(str))						// on ajoute un / à la fin de l'URL
+		str += '/';
+	return str;
+}
 
 /**
  * Méthode encodant correctement l'URL et appelant les autres méthodes de téléchargement des données
@@ -9,27 +55,12 @@ function telecharger() {
 	$("tbody").html('<td></td><td><img src="../images/ajax-loader.gif"></td>'); // on affiche une image de chargement
 																				// pour le style
 	var url = $("input").val();
-	url = encodeURI(url);
+	url = formatURL(url);	// on formate l'URL
+	url = encodeURI(url);	// on l'encode au format HTML (ex. / => %2F)
+	console.log(url);
 	telechargerW3C(url);
 	telechargerWPT(url);
 }
-
-
-/**
- * méthode future que j'implémenterai peut-être plus tard pour formater correctement l'URL passée (ex: facebook.com
- * --> https://www.facebook.com/ )
- * @param str
- * @returns {str}
- */
-// function isURL(str) { // base trouvée sur StackOverFlow : sert à formater une URL (https:// + www + domaine + /)
-// 	var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-// 		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-// 		'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-// 		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-// 		'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-// 		'(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-// 	return pattern.test(str);
-// }
 
 
 /**
@@ -37,19 +68,20 @@ function telecharger() {
  * @param url : adresse entrée
  */
 function telechargerWPT(url) {
-	var items = []; // crée un tableau contenant les données résultantes
+	var wpt = "http://www.webpagetest.org/runtest.php?url=";
 	var APIKey = "A.a34749d67ebe591881ecce7fba51dc0e";
-	APIKey = "A.048cb1f5377a481447a5336a0ca5e9c6"; // j'ai 2 clés d'API car j'ai eu des problèmes de tests
+	APIKey = "A.048cb1f5377a481447a5336a0ca5e9c6";
+	APIKey = "A.910d116aae1bec685075212f6567b732";
 	var format = "json";
-	var adresse = "http://www.webpagetest.org/runtest.php?url=" + url + "&k=" + APIKey + "&f=" + format;
-	// http://www.webpagetest.org/runtest.php?url=https%3A%2F%2Fwww.twitter.com%2F&k=A.a34749d67ebe591881ecce7fba51dc0e&f=json
-	// pour les tests dans le navigateur
+	var adresse = wpt + url + "&k=" + APIKey + "&f=" + format;
 
-	$.getJSON(adresse, function (original) { //on récupère les données au format JSON, ce JSON contient lui-même un lien
-		// vers le fichier JSON qui lui contient les données intéressantes
-		console.log(original.data.jsonUrl);
-		$.getJSON("http://www.webpagetest.org/jsonResult.php?test=161119_1R_HT6"/*original.data.jsonUrl*/, function (result) {
-			console.debug(result);
+	$.getJSON(adresse, function (original) {	//on récupère les données au format JSON, ce JSON contient lui-même un
+		// lien vers le fichier JSON qui lui contient les données intéressantes
+
+		// impossible de faire fonctionner correctement la fonction : obligé de passer par un test déjà effectué
+		// sinon le test est toujours en attente et ne donne pas les résultats demandés
+		var urlPredefinie = "http://www.webpagetest.org/jsonResult.php?test=161119_1R_HT6";
+		$.getJSON(/*original.data.jsonUrl*/ urlPredefinie, function (result) {
 			var loadTime = result.data.average.firstView.loadTime;
 			var visComplete = result.data.average.firstView.visualComplete;
 			var fullLoaded = result.data.average.firstView.fullyLoaded;
@@ -76,12 +108,13 @@ function telechargerWPT(url) {
 
 /**
  * Méthode permettant d'afficher les données reçues par w3.validator.org
- * @param url : adresse entrée
+ * @param url : string adresse entrée
  */
 function telechargerW3C(url) {
 
 	$.getJSON('https://validator.w3.org/nu/?doc=' + url + '&out=json', function (data) { // on récupère les données
 		// dans un fichier JSON
+		console.debug(data);
 		var datas = [];
 		$.each(data.messages, function (key, val) { // qu'on place dans un tableau
 			datas.push(val);
@@ -98,12 +131,12 @@ function telechargerW3C(url) {
 			if (val.subType) {
 				if (val.subType === 'warning')
 					ligne.className = 'warning';
-				colonne.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> ' + val.subType;
+				colonne.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> ' + val.subType.toUpperCase();
 			}
 			else {
 				if (val.type === 'error') // qu'on stylise avec une classe de Bootstrap
 					ligne.className = 'danger';
-				colonne.innerHTML = '<span class="glyphicon glyphicon-remove-sign"></span> ' + val.type;
+				colonne.innerHTML = '<span class="glyphicon glyphicon-remove-sign"></span> ' + val.type.toUpperCase();
 			}
 
 			ligne.appendChild(colonne); // on ajoute à la ligne une colonne contenant le type d'avertissement
@@ -116,39 +149,20 @@ function telechargerW3C(url) {
 			cd = val.firstColumn;
 			cf = val.lastColumn;
 			var detail = 'From line ' + ld + ', column ' + cd + '; to line ' + lf + ', column ' + cf;
-			info.innerHTML = '<strong>' + insererCode(val.message) + '</strong>' + '<br/>' + detail + '<br/>';
-			var code = document.createElement('code');
+			info.innerHTML = '<strong>' + insererBalisesCode(val.message) + '</strong>' + '<br/>' + detail + '<br/>';
 
-			var extract = surlignage(val.extract);
-			var mark = document.createElement('mark');
-			mark.append(extract[1]);
-			code.append(extract[0]);
-			code.appendChild(mark);
-			code.append(extract[2]);
-			//code.append(val.extract); //.innerHTML = surlignage(val.extract);//
-
-
-			info.appendChild(code);
+			if (val.extract) {
+				var code = document.createElement('code');
+				var extract = surlignage(val.extract);
+				var mark = document.createElement('mark');
+				mark.append(extract[1]);
+				code.append(extract[0]);
+				code.appendChild(mark);
+				code.append(extract[2]);
+				info.appendChild(code);
+			}
 			ligne.appendChild(info);
 			$('#w3c').append(ligne); // on ajoute la ligne au tableau HTML dédié aux résultats de W3C
 		});
 	});
-}
-
-function insererCode(str) {
-	str = str.replace(/“/g, "<code>");
-	str = str.replace(/”/g, "</code>");
-	return str;
-}
-
-function surlignage(str) {
-	var tab = str.split("");
-	var results = [];
-	results.push(tab.splice(0, 10).join(''));
-	var place = tab.length - 6;
-	results.push(tab.splice(0, place).join(''));
-	console.log(place + ' ' + tab.length);
-	results.push(tab.join(''));
-	console.log(tab.splice(place).join(''));
-	return results;
 }

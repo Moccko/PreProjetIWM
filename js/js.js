@@ -20,6 +20,7 @@ function insererBalisesCode(str) {
  * @returns extraits : Array[string]
  */
 function surlignage(str) {
+
 	var tab = str.split("");	// je crée un tableau de caractères pour manipuler plus facilement str
 	var extraits = [];			// le tableau contenant les string
 	extraits.push(tab.splice(0, 10).join(''));	// le surlignage commence à partir du 10ème caractère
@@ -35,6 +36,7 @@ function surlignage(str) {
  * @returns str : string
  */
 function formatURL(str) {
+
 	var www = new RegExp('^www\\.');			// commence par www.
 	var https = new RegExp('^https?:\\/\\/');	// commence par http:// ou https://
 	var slash = new RegExp('\\/\\$');			// finit par /
@@ -52,12 +54,12 @@ function formatURL(str) {
  * Méthode encodant correctement l'URL et appelant les autres méthodes de téléchargement des données
  */
 function telecharger() {
+
 	$("tbody").html('<td></td><td><img src="../images/ajax-loader.gif"></td>'); // on affiche une image de chargement
 																				// pour le style
 	var url = $("input").val();
 	url = formatURL(url);	// on formate l'URL
 	url = encodeURI(url);	// on l'encode au format HTML (ex. / => %2F)
-	console.log(url);
 	telechargerW3C(url);
 	telechargerWPT(url);
 }
@@ -65,13 +67,14 @@ function telecharger() {
 
 /**
  * Méthode permettant d'afficher les données reçues par webpagetest.org
- * @param url : adresse entrée
+ * @param url : string
  */
 function telechargerWPT(url) {
+
 	var wpt = "http://www.webpagetest.org/runtest.php?url=";
 	var APIKey = "A.a34749d67ebe591881ecce7fba51dc0e";
-	APIKey = "A.048cb1f5377a481447a5336a0ca5e9c6";
-	APIKey = "A.910d116aae1bec685075212f6567b732";
+//	APIKey = "A.048cb1f5377a481447a5336a0ca5e9c6";
+//	APIKey = "A.910d116aae1bec685075212f6567b732";
 	var format = "json";
 	var adresse = wpt + url + "&k=" + APIKey + "&f=" + format;
 
@@ -81,14 +84,16 @@ function telechargerWPT(url) {
 		// impossible de faire fonctionner correctement la fonction : obligé de passer par un test déjà effectué
 		// sinon le test est toujours en attente et ne donne pas les résultats demandés
 		var urlPredefinie = "http://www.webpagetest.org/jsonResult.php?test=161119_1R_HT6";
+
 		$.getJSON(/*original.data.jsonUrl*/ urlPredefinie, function (result) {
+
 			var loadTime = result.data.average.firstView.loadTime;
 			var visComplete = result.data.average.firstView.visualComplete;
 			var fullLoaded = result.data.average.firstView.fullyLoaded;
 			var speedIndex = result.data.average.firstView.SpeedIndex;
 
-			$('#wpt').empty(); // on réinitialise le tableau des résultats pour ne garder que les résultats de l'analyse
-			// courante et retirer l'image d'animation
+			$('#wpt').empty(); // on vide le tableau des résultats pour ne garder que les résultats de l'analyse
+							   // courante et retirer l'image d'animation
 
 			var lt = document.createElement('tr');
 			lt.innerHTML = '<th>Load time</th><td>' + loadTime + '</td>';
@@ -108,53 +113,63 @@ function telechargerWPT(url) {
 
 /**
  * Méthode permettant d'afficher les données reçues par w3.validator.org
- * @param url : string adresse entrée
+ * @param url : string
  */
 function telechargerW3C(url) {
 
 	$.getJSON('https://validator.w3.org/nu/?doc=' + url + '&out=json', function (data) { // on récupère les données
 		// dans un fichier JSON
-		console.debug(data);
-		var datas = [];
+		var messages = [];
 		$.each(data.messages, function (key, val) { // qu'on place dans un tableau
-			datas.push(val);
+			messages.push(val);
 		});
 
-		$('#w3c').empty(); // on réinitialise le tableau des résultats pour ne garder que les résultats de l'analyse
+		$('#w3c').empty(); // on vide le tableau des résultats pour ne garder que les résultats de l'analyse
 		// courante et retirer l'image d'animation
 
-		$.each(datas, function (key, val) { // on place les données dans un tableau HTML avec des classes Bootstrap
+		$.each(messages, function (key, val) { // on place les données dans un tableau HTML avec des classes Bootstrap
 			var ligne;
 			ligne = document.createElement('tr');
-			$('tbody').append(ligne); // on crée une ligne <tr>
-			var colonne = document.createElement('th');
-			if (val.subType) {
-				if (val.subType === 'warning')
-					ligne.className = 'warning';
-				colonne.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> ' + val.subType.toUpperCase();
-			}
-			else {
-				if (val.type === 'error') // qu'on stylise avec une classe de Bootstrap
-					ligne.className = 'danger';
-				colonne.innerHTML = '<span class="glyphicon glyphicon-remove-sign"></span> ' + val.type.toUpperCase();
-			}
+			$('tbody').append(ligne);					// on crée une ligne <tr>
+			var colonne = document.createElement('th');	// on écrit la catégorie de l'erreur dans un header
 
+			var intitule;
+			switch (val.type) {	// on stylise la ligne avec Bootstrap
+				case 'error':
+					ligne.className = 'danger';
+					intitule = 'ERROR';
+					if (val.subType)
+						intitule = val.subType.toUpperCase();
+					colonne.innerHTML = '<span class="glyphicon glyphicon-remove-sign"></span> ' + intitule;
+					break;
+				case 'info':
+					ligne.className = 'warning';
+					intitule = val.subType.toUpperCase();
+					colonne.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> ' + intitule;
+					break;
+				default:
+					ligne.className = 'danger';
+					intitule = 'IMPOSSIBLE DE R&Eacute;CUP&Eacute;RER LE DOCUMENT';
+					colonne.innerHTML = '<span class="glyphicon glyphicon-remove-sign"></span> ' + intitule;
+					break;
+			}
 			ligne.appendChild(colonne); // on ajoute à la ligne une colonne contenant le type d'avertissement
-			var info = document.createElement('td');
-			var ld, lf, cd, cf; // lignes début / fin colonnes début/fin
+
+			var info = document.createElement('td');	// la colonne contenant les informations sur l'erreur
+			var ld, lf, cd, cf;							// lignes début / fin, colonnes début/fin dans le code
 			if (val.firstLine)
-				ld = val.firstLine;
+				ld = val.firstLine;						// parfois la première ligne est aussi la dernière
 			else ld = val.lastLine;
 			lf = val.lastLine;
 			cd = val.firstColumn;
 			cf = val.lastColumn;
-			var detail = 'From line ' + ld + ', column ' + cd + '; to line ' + lf + ', column ' + cf;
+			var detail = 'De la ligne ' + ld + ', colonne ' + cd + ' &agrave; la ligne ' + lf + ', colonne ' + cf;
 			info.innerHTML = '<strong>' + insererBalisesCode(val.message) + '</strong>' + '<br/>' + detail + '<br/>';
 
-			if (val.extract) {
+			if (val.extract) {								// l'extrait de code erroné
 				var code = document.createElement('code');
-				var extract = surlignage(val.extract);
-				var mark = document.createElement('mark');
+				var extract = surlignage(val.extract);		// on découpe le code
+				var mark = document.createElement('mark');	// on place les balise <mark></mark> de surlignage
 				mark.append(extract[1]);
 				code.append(extract[0]);
 				code.appendChild(mark);
